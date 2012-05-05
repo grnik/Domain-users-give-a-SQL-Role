@@ -38,7 +38,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btAddUser = new System.Windows.Forms.Button();
             this.dtgRoles = new System.Windows.Forms.DataGridView();
-            this.btGetRoles = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -85,7 +84,7 @@
             this.dtgAllUsers.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtgAllUsers.Location = new System.Drawing.Point(12, 99);
             this.dtgAllUsers.Name = "dtgAllUsers";
-            this.dtgAllUsers.Size = new System.Drawing.Size(240, 177);
+            this.dtgAllUsers.Size = new System.Drawing.Size(498, 177);
             this.dtgAllUsers.TabIndex = 6;
             // 
             // btSearch
@@ -116,30 +115,21 @@
             // 
             // btAddUser
             // 
-            this.btAddUser.Location = new System.Drawing.Point(177, 431);
+            this.btAddUser.Location = new System.Drawing.Point(12, 428);
             this.btAddUser.Name = "btAddUser";
             this.btAddUser.Size = new System.Drawing.Size(75, 23);
             this.btAddUser.TabIndex = 13;
             this.btAddUser.Text = "Add user";
             this.btAddUser.UseVisualStyleBackColor = true;
+            this.btAddUser.Click += new System.EventHandler(this.btAddUser_Click);
             // 
             // dtgRoles
             // 
             this.dtgRoles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dtgRoles.Location = new System.Drawing.Point(12, 310);
             this.dtgRoles.Name = "dtgRoles";
-            this.dtgRoles.Size = new System.Drawing.Size(240, 109);
+            this.dtgRoles.Size = new System.Drawing.Size(498, 109);
             this.dtgRoles.TabIndex = 14;
-            // 
-            // btGetRoles
-            // 
-            this.btGetRoles.Location = new System.Drawing.Point(14, 431);
-            this.btGetRoles.Name = "btGetRoles";
-            this.btGetRoles.Size = new System.Drawing.Size(75, 23);
-            this.btGetRoles.TabIndex = 15;
-            this.btGetRoles.Text = "GetRoles";
-            this.btGetRoles.UseVisualStyleBackColor = true;
-            this.btGetRoles.Click += new System.EventHandler(this.btGetRoles_Click);
             // 
             // label1
             // 
@@ -172,11 +162,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(263, 463);
+            this.ClientSize = new System.Drawing.Size(522, 463);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.btGetRoles);
             this.Controls.Add(this.dtgRoles);
             this.Controls.Add(this.btAddUser);
             this.Controls.Add(this.label2);
@@ -208,7 +197,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btAddUser;
         private System.Windows.Forms.DataGridView dtgRoles;
-        private System.Windows.Forms.Button btGetRoles;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;

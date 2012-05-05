@@ -8,3 +8,7 @@ C:\My\Work\UserDomain\UsersDomain\UsersDomain\obj\x86\Debug\UsersDomain.exe
 C:\My\Work\UserDomain\UsersDomain\UsersDomain\obj\x86\Debug\UsersDomain.pdb
 C:\My\Work\UserDomain\UsersDomain\UsersDomain\bin\Debug\UsersDomain.exe.config
 C:\My\Work\UserDomain\UsersDomain\UsersDomain\obj\x86\Debug\UsersDomain.Main.resources
+C:\My\Work\UserDomain\UsersDomain\UsersDomain\bin\Debug\UsersDomain.exe.manifest
+C:\My\Work\UserDomain\UsersDomain\UsersDomain\bin\Debug\UsersDomain.application
+C:\My\Work\UserDomain\UsersDomain\UsersDomain\obj\x86\Debug\UsersDomain.exe.manifest
+C:\My\Work\UserDomain\UsersDomain\UsersDomain\obj\x86\Debug\UsersDomain.application

@@ -31,16 +31,13 @@ DROP LOGIN "PNG\GazeevAP";
         {
             public string Account { get; private set; }
             public string Name { get; private set; }
+            public string Domain { get; private set; }
 
-            public DomainUser(string account, string name)
+            public DomainUser(string domain, string account, string name)
             {
                 Account = account;
                 Name = name;
-            }
-
-            public DomainUser(string account)
-                : this(account, "")
-            {
+                Domain = domain;
             }
         }
 
@@ -61,6 +58,8 @@ DROP LOGIN "PNG\GazeevAP";
             InitializeComponent();
 
             _connectionString = Properties.Settings.Default.ConnectionString;
+
+            dtgRoles.DataSource = GetRolesDB();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -126,13 +125,14 @@ DROP LOGIN "PNG\GazeevAP";
                 for (int counter = 0; counter < resultCol.Count; counter++)
                 {
                     result = resultCol[counter];
+                    string domain = GetDoaminFromPath(result.Path);
                     if (result.Properties.Contains("samaccountname"))
                     {
                         if (result.Properties.Contains("displayName"))
-                            findUsers.Add(new DomainUser((String)result.Properties["samaccountname"][0],
+                            findUsers.Add(new DomainUser(domain, (String)result.Properties["samaccountname"][0],
                                                          (String)result.Properties["displayName"][0]));
                         else
-                            findUsers.Add(new DomainUser((String)result.Properties["samaccountname"][0]));
+                            findUsers.Add(new DomainUser(domain, (String)result.Properties["samaccountname"][0], ""));
                     }
                 }
                 resultCol.Dispose();
@@ -158,18 +158,36 @@ DROP LOGIN "PNG\GazeevAP";
                     for (int counter = 0; counter < resultCol.Count; counter++)
                     {
                         result = resultCol[counter];
+                        string domain = GetDoaminFromPath(result.Path);
                         if (result.Properties.Contains("samaccountname"))
                         {
                             if (result.Properties.Contains("displayName"))
-                                allUsers.Add(new DomainUser((String)result.Properties["samaccountname"][0], (String)result.Properties["displayName"][0]));
+                                allUsers.Add(new DomainUser(domain, (String)result.Properties["samaccountname"][0], (String)result.Properties["displayName"][0]));
                             else
-                                allUsers.Add(new DomainUser((String)result.Properties["samaccountname"][0]));
+                                allUsers.Add(new DomainUser(domain, (String)result.Properties["samaccountname"][0], ""));
                         }
                     }
                 }
                 resultCol.Dispose();
             }
             return allUsers;
+        }
+
+        string GetDoaminFromPath(string path)
+        {
+            foreach (var elem in path.Split(','))
+            {
+                if (elem.StartsWith("DC="))
+                {
+                    return elem.Substring(3);
+                }
+            }
+            return "";
+        }
+
+        string GetFullUserName(DomainUser user)
+        {
+            return user.Domain + "\\" + user.Account;
         }
 
         List<RoleDB> GetRolesDB()
@@ -190,11 +208,84 @@ DROP LOGIN "PNG\GazeevAP";
             return result;
         }
 
+        bool AddUser(DomainUser newUser, RoleDB role)
+        {
+            /*    
+           CREATE LOGIN "PNG\GazeevAP" FROM WINDOWS;
+           CREATE USER "PNG\GazeevAP";
+           EXEC sp_addrolemember 'db_datareader', "PNG\GazeevAP"
+           */
+            string fullUserName = GetFullUserName(newUser);
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                SqlCommand comm = new SqlCommand();
+                comm.Connection = conn;
+
+                comm.CommandText = "CREATE LOGIN \"" + fullUserName + "\" FROM WINDOWS;";
+                try
+                {
+                    comm.ExecuteNonQuery();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message, "Create login", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                comm.CommandText = "CREATE USER \"" + fullUserName + "\";";
+                try
+                {
+                    comm.ExecuteNonQuery();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message, "Create user", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                comm.CommandText = "EXEC sp_addrolemember \"" + role.Role + "\", \"" + fullUserName + "\";";
+                try
+                {
+                    comm.ExecuteNonQuery();
+                }
+                catch (Exception exc)
+                {
+                    MessageBox.Show(exc.Message, "Add user to the role", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         private void btGetRoles_Click(object sender, EventArgs e)
         {
-            dtgRoles.DataSource = GetRolesDB();
+         }
+
+        private void btAddUser_Click(object sender, EventArgs e)
+        {
+            DataGridViewRow userCh = dtgAllUsers.CurrentRow;
+            if (userCh == null)
+            {
+                throw new ApplicationException("You must choose user");
+            }
+            DomainUser user = new DomainUser(userCh.Cells["Domain"].Value.ToString(),
+                                             userCh.Cells["Account"].Value.ToString(),
+                                             userCh.Cells["Name"].Value.ToString());
+            DataGridViewRow roleCh = dtgRoles.CurrentRow;
+            if (roleCh == null)
+            {
+                throw new ApplicationException("You must choose role");
+            }
+            RoleDB role = new RoleDB(roleCh.Cells["Role"].Value.ToString(), roleCh.Cells["Description"].Value.ToString());
+
+            if (!AddUser(user, role))
+            {
+                throw new ApplicationException("Can not add user to DB");
+            }
+
+            MessageBox.Show("User was successfully added", "Add user", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }
